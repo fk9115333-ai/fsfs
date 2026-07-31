@@ -3,77 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Game Tracker Pro</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>تتبع الألعاب | Game Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- شريط التنقل العلوي -->
-    <header class="glass-header">
-        <div class="logo">
-            <i class="fa-solid fa-gamepad"></i>
-            <span>تتبعي</span>
-        </div>
-        <div class="header-actions">
-            <span class="games-count" id="upcomingCount">0 قادمة</span>
-            <button class="icon-btn" onclick="openSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button class="icon-btn primary" onclick="openSearch()"><i class="fa-solid fa-plus"></i></button>
-        </div>
+
+    <header>
+        <h1><i class="fas fa-gamepad"></i> مكتبة الألعاب</h1>
     </header>
 
-    <!-- نافذة البحث السريع -->
-    <div id="searchModal" class="modal">
-        <div class="modal-content glass-panel">
-            <div class="search-header">
-                <input type="text" id="searchInput" placeholder="ابحث عن لعبة (مثال: Resident Evil)..." autocomplete="off">
-                <button class="icon-btn" onclick="closeSearch()"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="searchResults" class="search-results"></div>
-        </div>
-    </div>
-
-    <!-- المحتوى الرئيسي (الصفحات) -->
     <main id="app-content">
-        <!-- 1. صفحة الألعاب القادمة -->
-        <section id="upcoming-page" class="page active">
-            <div class="filters">
-                <button class="filter-chip active">الكل</button>
-                <button class="filter-chip">PS5</button>
-                <button class="filter-chip">PC</button>
-            </div>
-            <div id="upcomingList" class="games-grid">
-                <!-- سيتم حقن البطاقات هنا -->
-            </div>
+        <section id="upcoming" class="page active">
+            <h2><i class="fas fa-calendar-alt"></i> الألعاب القادمة</h2>
+            <div class="games-grid" id="upcoming-grid"></div>
         </section>
 
-        <!-- 2. صفحة الألعاب المختومة -->
-        <section id="completed-page" class="page" style="display: none; padding: 60px 20px; text-align: center;">
-            <i class="fa-solid fa-check-double" style="font-size: 4rem; color: var(--success); margin-bottom: 20px;"></i>
-            <h2>الألعاب المختومة</h2>
-            <p style="color: var(--text-muted); margin-top: 10px;">بمجرد تختيمك للعبة، ستتمكن من نقلها إلى هنا مع إضافة تقييمك الخاص وعدد ساعات اللعب.</p>
+        <section id="completed" class="page">
+            <h2><i class="fas fa-trophy"></i> الألعاب المختومة</h2>
+            <div class="games-grid" id="completed-grid"></div>
         </section>
 
-        <!-- 3. صفحة قائمة الانتظار -->
-        <section id="waitlist-page" class="page" style="display: none; padding: 60px 20px; text-align: center;">
-            <i class="fa-solid fa-clock" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 20px;"></i>
-            <h2>قائمة الانتظار</h2>
-            <p style="color: var(--text-muted); margin-top: 10px;">الألعاب التي تخطط للعبها لاحقاً ستظهر هنا لتنظيم جدولك.</p>
+        <section id="wishlist" class="page">
+            <h2><i class="fas fa-star"></i> قائمة الانتظار</h2>
+            <div class="games-grid" id="wishlist-grid"></div>
         </section>
 
-        <!-- 4. صفحة الإحصائيات -->
-        <section id="stats-page" class="page" style="display: none; padding: 60px 20px; text-align: center;">
-            <i class="fa-solid fa-chart-pie" style="font-size: 4rem; color: var(--primary-light); margin-bottom: 20px;"></i>
-            <h2>الإحصائيات</h2>
-            <p style="color: var(--text-muted); margin-top: 10px;">هنا سيظهر ملخص لعدد الألعاب التي أنهيتها، إجمالي ساعات اللعب، وأكثر التصنيفات التي تلعبها.</p>
+        <section id="stats" class="page">
+            <h2><i class="fas fa-chart-pie"></i> إحصائياتي</h2>
+            <div class="stats-container" id="stats-container"></div>
         </section>
     </main>
 
-    <!-- شريط التنقل السفلي -->
-    <nav class="bottom-nav glass-panel">
-        <button class="nav-item active"><i class="fa-solid fa-calendar-days"></i><span>القادمة</span></button>
-        <button class="nav-item"><i class="fa-solid fa-check-double"></i><span>المختومة</span></button>
-        <button class="nav-item"><i class="fa-solid fa-clock"></i><span>الانتظار</span></button>
-        <button class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>إحصائيات</span></button>
+    <button class="fab" onclick="openModal()"><i class="fas fa-plus"></i></button>
+
+    <div id="game-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>إضافة لعبة جديدة</h3>
+            <form id="add-game-form">
+                <label>حالة اللعبة:</label>
+                <select id="game-status" onchange="toggleFormFields()">
+                    <option value="upcoming">لعبة قادمة</option>
+                    <option value="completed">تم التختيم</option>
+                    <option value="wishlist">قائمة الانتظار</option>
+                </select>
+
+                <!-- مربع البحث الجديد -->
+                <div style="position: relative;">
+                    <input type="text" id="game-title" placeholder="اسم اللعبة (ابحث بالإنجليزية...)" required autocomplete="off">
+                    <div id="search-results" class="search-dropdown"></div>
+                </div>
+
+                <input type="url" id="game-cover" placeholder="رابط صورة الغلاف (URL)" required>
+                <input type="text" id="game-genre" placeholder="التصنيف (أكشن، رعب، RPG...)" required>
+                <input type="text" id="game-platforms" placeholder="المنصات (PS5, PC, Xbox)" required>
+
+                <div id="upcoming-fields">
+                    <label>تاريخ الإصدار:</label>
+                    <input type="date" id="game-release-date">
+                </div>
+
+                <div id="completed-fields" style="display: none;">
+                    <input type="number" id="game-playtime" placeholder="عدد ساعات اللعب">
+                    <input type="number" id="game-rating" placeholder="التقييم (من 10)" min="1" max="10">
+                    <textarea id="game-comment" placeholder="تعليقك الشخصي عن اللعبة"></textarea>
+                    <label>تاريخ التختيم:</label>
+                    <input type="date" id="game-completed-date">
+                </div>
+
+                <div id="wishlist-fields" style="display: none;">
+                    <label>الأولوية:</label>
+                    <select id="game-priority">
+                        <option value="🔥 متحمس جداً">🔥 متحمس جداً</option>
+                        <option value="⭐ أنتظرها">⭐ أنتظرها</option>
+                        <option value="⏳ لاحقاً">⏳ لاحقاً</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">حفظ اللعبة</button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="switchPage('upcoming', this)"><i class="fas fa-calendar-alt"></i><span>القادمة</span></a>
+        <a href="#" class="nav-item" onclick="switchPage('completed', this)"><i class="fas fa-check-double"></i><span>المختومة</span></a>
+        <a href="#" class="nav-item" onclick="switchPage('wishlist', this)"><i class="fas fa-heart"></i><span>الانتظار</span></a>
+        <a href="#" class="nav-item" onclick="switchPage('stats', this)"><i class="fas fa-chart-bar"></i><span>الإحصائيات</span></a>
     </nav>
 
     <script src="app.js"></script>
