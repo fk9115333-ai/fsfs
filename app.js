@@ -155,12 +155,11 @@ function calculateStats() {
 
 window.onload = renderData;
 
-// === نظام البحث التلقائي عن الألعاب ===
+// === نظام البحث التلقائي (مخصص لألعاب PS و PC فقط) ===
 const searchInput = document.getElementById('game-title');
 const searchResults = document.getElementById('search-results');
 
-// ضع مفتاح الـ API الخاص بك بين علامتي التنصيص هنا
-const RAWG_API_KEY = 'ضع_مفتاحك_هنا'; 
+const RAWG_API_KEY = '4ea2968a10604ee0bacd122f1ad00c'; 
 
 searchInput.addEventListener('input', async function() {
     const query = this.value.trim();
@@ -171,7 +170,8 @@ searchInput.addEventListener('input', async function() {
     }
 
     try {
-        const response = await fetch(`https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=${query}&page_size=5`);
+        // فلترة النتائج لتشمل ألعاب البلايستيشن (18) والـ PC (4) حصرياً
+        const response = await fetch(`https://api.rawg.io/api/games?key=${RAWG_API_KEY}&search=${query}&platforms=18,4&page_size=5`);
         const data = await response.json();
 
         searchResults.innerHTML = '';
